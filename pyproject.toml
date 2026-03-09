@@ -1,0 +1,132 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel", "setuptools-scm>=8.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qa-agent"
+version = "0.1.0"
+description = "AI-Powered QA Agent for intelligent test automation and artifact generation"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "QA Agent Team"}
+]
+keywords = ["qa", "testing", "ai", "automation", "rag", "mcp"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "chromadb>=0.4.22",
+    "openai>=1.10.0",
+    "typer>=0.9.0",
+    "rich>=13.7.0",
+    "pyyaml>=6.0.1",
+    "python-dotenv>=1.0.0",
+    "httpx>=0.26.0",
+    "sentence-transformers>=2.3.0",
+    "qdrant-client>=1.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.12.0",
+    "mypy>=1.8.0",
+    "ruff>=0.1.0",
+    "pre-commit>=3.6.0",
+    "hypothesis>=6.92.0",
+]
+
+[project.scripts]
+qa-agent = "qa_agent.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["qa_agent*"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+include = '\.pyi?$'
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "chromadb.*",
+    "qdrant_client.*",
+    "sentence_transformers.*",
+]
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+    "B008",  # do not perform function calls in argument defaults
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=qa_agent",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+]
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["qa_agent"]
+omit = ["*/tests/*", "*/test_*.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]

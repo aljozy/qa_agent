@@ -1,0 +1,23 @@
+# QA Agent Configuration using Kiro's built-in models
+# This is the recommended configuration for Kiro users
+
+ai:
+  # Use Kiro's built-in AI models (no API key required)
+  provider: "kiro"
+  
+  # Model selection for Kiro:
+  # - "auto": Let Kiro choose the best model for each task (recommended)
+  # - "fast": Faster responses, good for simple tasks
+  # - "balanced": Balance between speed and quality
+  # - "quality": Best quality, slower responses
+  model: "auto"
+  
+  # Temperature controls randomness (0.0 = deterministic, 2.0 = very creative)
+  temperature: 0.7
+  
+  # Maximum tokens per generation
+  max_tokens: 2000
+
+output:
+  # Directory where test artifacts will be saved
+  directory: "output"

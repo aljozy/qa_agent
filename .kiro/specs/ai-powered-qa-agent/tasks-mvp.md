@@ -18,8 +18,8 @@ This MVP implementation plan focuses on delivering core value in 6-8 weeks inste
 - [x] 2. Implement core data models
   - ✓ Already complete
 
-- [ ] 3. Implement simple configuration management
-  - [ ] 3.1 Create basic config loader
+- [x] 3. Implement simple configuration management
+  - [x] 3.1 Create basic config loader
     - Implement `Config` class to load YAML configuration
     - Support OpenAI API parameters (api_key, model, temperature, max_tokens)
     - Support output directory configuration

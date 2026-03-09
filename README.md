@@ -39,15 +39,61 @@ pre-commit install
 
 ### Configuration
 
-Copy the example environment file and configure your settings:
+The QA Agent supports two AI providers:
+
+1. **Kiro (Recommended)**: Uses Kiro's built-in AI models - no API key required
+2. **OpenAI**: Uses OpenAI's API - requires an API key
+
+#### Using Kiro Models (Recommended)
+
+Create a `config.yaml` file:
+
+```yaml
+ai:
+  provider: "kiro"
+  model: "auto"  # Options: auto, fast, balanced, quality
+  temperature: 0.7
+  max_tokens: 2000
+
+output:
+  directory: "output"
+```
+
+Or use the provided example:
+
+```bash
+cp config.kiro.yaml config.yaml
+```
+
+#### Using OpenAI Models
+
+Create a `config.yaml` file:
+
+```yaml
+ai:
+  provider: "openai"
+  api_key: "${OPENAI_API_KEY}"  # Or provide directly
+  model: "gpt-4"
+  temperature: 0.7
+  max_tokens: 2000
+
+output:
+  directory: "output"
+```
+
+Or use the provided example:
+
+```bash
+cp config.example.yaml config.yaml
+# Edit config.yaml and add your OpenAI API key
+```
+
+You can also set environment variables:
 
 ```bash
 cp .env.example .env
+# Edit .env with your settings
 ```
-
-Edit `.env` with your API keys and configuration:
-
-- `OPENAI_API_KEY`: Your OpenAI API key for AI model access
 - `VECTOR_STORE_HOST`: Qdrant host (default: localhost)
 - `VECTOR_STORE_PORT`: Qdrant port (default: 6333)
 - Additional settings for MCP servers, output formats, etc.

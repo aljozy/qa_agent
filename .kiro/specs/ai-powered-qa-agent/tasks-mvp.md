@@ -34,8 +34,8 @@ This MVP implementation plan focuses on delivering core value in 6-8 weeks inste
 
 ### Phase 2: Markdown Parser (Week 2)
 
-- [ ] 4. Implement Markdown parser
-  - [ ] 4.1 Create Markdown parser implementation
+- [x] 4. Implement Markdown parser
+  - [x] 4.1 Create Markdown parser implementation
     - Implement `MarkdownParser` class
     - Extract headings as requirement sections
     - Extract bullet points and paragraphs as requirements

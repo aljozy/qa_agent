@@ -2,7 +2,7 @@
 
 ## Overview
 
-This MVP implementation plan focuses on delivering core value in 6-8 weeks instead of 15 weeks. We'll build a working system that parses Markdown PRDs and generates manual test cases using OpenAI, with a simple CLI interface.
+This MVP implementation plan focuses on delivering core value in 6-8 weeks instead of 15 weeks. We'll build a working system that parses Markdown PRDs and generates manual test cases using Kiro's AI models (or optionally OpenAI), with a simple CLI interface.
 
 **MVP Scope**: Markdown parser → Manual test generator → Basic RTM → CLI
 
@@ -21,12 +21,13 @@ This MVP implementation plan focuses on delivering core value in 6-8 weeks inste
 - [x] 3. Implement simple configuration management
   - [x] 3.1 Create basic config loader
     - Implement `Config` class to load YAML configuration
-    - Support OpenAI API parameters (api_key, model, temperature, max_tokens)
+    - Support AI provider configuration (Kiro as default, OpenAI as optional)
+    - Support AI model parameters (provider, api_key, model, temperature, max_tokens)
     - Support output directory configuration
     - Implement validation with descriptive error messages
     - _Requirements: 16.1, 16.2, 16.5, 16.6_
 
-  - [ ]* 3.2 Write unit tests for configuration
+  - [x]* 3.2 Write unit tests for configuration
     - Test valid configuration loading
     - Test invalid configuration error handling
     - _Requirements: 16.6_
@@ -67,11 +68,11 @@ This MVP implementation plan focuses on delivering core value in 6-8 weeks inste
     - Test JSON serialization/deserialization
     - _Requirements: 12.1, 12.3_
 
-### Phase 4: OpenAI Integration (Week 3)
+### Phase 4: AI Client Integration (Week 3)
 
-- [ ] 6. Implement OpenAI client wrapper
-  - [ ] 6.1 Create OpenAI client
-    - Implement `LLMClient` class wrapping OpenAI API
+- [ ] 6. Implement AI client wrapper
+  - [ ] 6.1 Create AI client
+    - Implement `LLMClient` class supporting both Kiro and OpenAI providers
     - Implement `generate()` method for chat completions
     - Handle API errors and rate limiting
     - Implement retry logic with exponential backoff
@@ -140,7 +141,7 @@ This MVP implementation plan focuses on delivering core value in 6-8 weeks inste
     - Implement `run` command to execute full pipeline (parse + generate + rtm)
     - Accept input file path and output directory as arguments
     - Add `--config` flag for configuration file
-    - Add `--api-key` flag for OpenAI API key
+    - Add `--provider` flag to override AI provider (kiro/openai)
     - Return exit code 0 on success, non-zero on failure
     - Display progress with rich console output
     - _Requirements: 18.1, 18.2, 18.3_

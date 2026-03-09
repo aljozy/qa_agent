@@ -53,8 +53,8 @@ This MVP implementation plan focuses on delivering core value in 6-8 weeks inste
 
 ### Phase 3: File Storage (Week 2)
 
-- [ ] 5. Implement file-based storage
-  - [ ] 5.1 Create file storage implementation
+- [x] 5. Implement file-based storage
+  - [x] 5.1 Create file storage implementation
     - Implement `FileStorage` class
     - Implement `save()` method to write requirements to JSON
     - Implement `load()` method to read requirements from JSON

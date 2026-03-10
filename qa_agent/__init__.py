@@ -22,14 +22,16 @@ For more information, see the documentation at:
 https://github.com/qa-agent/qa-agent
 """
 
-__version__ = "0.1.0"
+__version__ = "1.0.0-mvp"
 __author__ = "QA Agent Team"
 __email__ = "qa-agent@example.com"
 __license__ = "MIT"
 __copyright__ = "Copyright 2024 QA Agent Team"
 
 # Version information tuple for programmatic access
-VERSION = tuple(map(int, __version__.split(".")))
+# Parse version, handling pre-release identifiers (e.g., "1.0.0-mvp")
+_version_parts = __version__.split("-")[0].split(".")
+VERSION = tuple(map(int, _version_parts))
 
 # Public API exports
 __all__ = [

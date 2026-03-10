@@ -222,7 +222,7 @@ This MVP implementation plan focuses on delivering core value in 6-8 weeks inste
     - Verify all examples work
     - Fix any bugs found
 
-  - [ ] 13.3 Create release
+  - [x] 13.3 Create release
     - Create CHANGELOG
     - Tag v1.0.0-mvp
     - Create release notes

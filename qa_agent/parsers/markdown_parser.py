@@ -5,10 +5,16 @@ from pathlib import Path
 from typing import List, Optional
 
 from qa_agent.models.base import Requirement, RequirementType, ValidationResult
+from qa_agent.parsers.base import RequirementParser
 
 
-class MarkdownParser:
+class MarkdownParser(RequirementParser):
     """Parser for Markdown PRD documents."""
+
+    # Parser metadata
+    name = "markdown"
+    supported_extensions = [".md", ".markdown"]
+    description = "Parser for Markdown requirement documents"
 
     # Keywords for classifying requirements
     FUNCTIONAL_KEYWORDS = [
@@ -42,20 +48,27 @@ class MarkdownParser:
         """Initialize the Markdown parser."""
         self.requirement_counter = 0
 
-    def parse(self, content: str, source: str = "markdown") -> List[Requirement]:
+    def parse(self, input_data: str | Path, source: str = "markdown") -> List[Requirement]:
         """
         Parse Markdown content and extract requirements.
 
         Args:
-            content: Markdown document content
-            source: Source identifier for the document
+            input_data: Either Markdown content string or Path to a Markdown file
+            source: Source identifier for the document (used when input_data is a string)
 
         Returns:
             List of parsed requirements
 
         Raises:
             ValueError: If content is empty or invalid
+            FileNotFoundError: If input_data is a Path that doesn't exist
         """
+        # Handle Path input
+        if isinstance(input_data, Path):
+            return self.parse_file(input_data)
+        
+        # Handle string input
+        content = input_data
         if not content or not content.strip():
             raise ValueError("Markdown content cannot be empty")
 
@@ -290,16 +303,42 @@ class MarkdownParser:
         """
         return f"Level {level}: {heading}"
 
-    def validate(self, content: str) -> ValidationResult:
+    def validate(self, input_data: str | Path) -> ValidationResult:
         """
         Validate Markdown content before parsing.
 
         Args:
-            content: Markdown content to validate
+            input_data: Either Markdown content string or Path to a Markdown file
 
         Returns:
             ValidationResult with validation status and messages
         """
+        # Handle Path input
+        if isinstance(input_data, Path):
+            if not input_data.exists():
+                return ValidationResult(
+                    is_valid=False,
+                    errors=[f"File not found: {input_data}"],
+                    warnings=[]
+                )
+            if not input_data.is_file():
+                return ValidationResult(
+                    is_valid=False,
+                    errors=[f"Path is not a file: {input_data}"],
+                    warnings=[]
+                )
+            try:
+                with open(input_data, "r", encoding="utf-8") as f:
+                    content = f.read()
+            except Exception as e:
+                return ValidationResult(
+                    is_valid=False,
+                    errors=[f"Failed to read file: {input_data}\nError: {str(e)}"],
+                    warnings=[]
+                )
+        else:
+            content = input_data
+        
         errors: List[str] = []
         warnings: List[str] = []
 

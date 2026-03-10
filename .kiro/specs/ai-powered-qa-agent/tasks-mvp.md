@@ -70,7 +70,7 @@ This MVP implementation plan focuses on delivering core value in 6-8 weeks inste
 
 ### Phase 4: AI Client Integration (Week 3)
 
-- [ ] 6. Implement AI client wrapper
+- [-] 6. Implement AI client wrapper
   - [ ] 6.1 Create AI client
     - Implement `LLMClient` class supporting both Kiro and OpenAI providers
     - Implement `generate()` method for chat completions

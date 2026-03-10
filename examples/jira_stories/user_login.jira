@@ -1,0 +1,10 @@
+Title: User Login
+
+As a user, I want to log in to the system so that I can access my account
+
+Acceptance Criteria:
+- Valid credentials should be accepted and user redirected to dashboard
+- Invalid credentials should be rejected with appropriate error message
+- Account should be locked after 3 failed login attempts
+- Locked accounts should display a message with unlock instructions
+- Password reset link should be available on login page

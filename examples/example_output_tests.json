@@ -1,0 +1,321 @@
+[
+  {
+    "id": "TC-AUTH-001-POS-001",
+    "requirement_id": "REQ-AUTH-001",
+    "title": "Successful User Registration with Valid Credentials",
+    "description": "Verify that a user can successfully register with a valid email and password meeting all requirements",
+    "type": "manual",
+    "scenario_type": "positive",
+    "priority": "high",
+    "preconditions": [
+      "User is on the registration page",
+      "Email address is not already registered in the system",
+      "Network connection is available"
+    ],
+    "test_steps": [
+      {
+        "step_number": 1,
+        "action": "Enter a valid email address (e.g., 'testuser@example.com') in the email field",
+        "expected_result": "Email field accepts the input"
+      },
+      {
+        "step_number": 2,
+        "action": "Enter a valid password (e.g., 'SecurePass123!') that meets all requirements: minimum 8 characters, at least one uppercase, one lowercase, one number, and one special character",
+        "expected_result": "Password field accepts the input and password strength indicator shows 'Strong'"
+      },
+      {
+        "step_number": 3,
+        "action": "Enter the same password in the 'Confirm Password' field",
+        "expected_result": "Confirm password field accepts the input"
+      },
+      {
+        "step_number": 4,
+        "action": "Click the 'Register' button",
+        "expected_result": "Registration form is submitted"
+      }
+    ],
+    "expected_results": [
+      "User account is created successfully",
+      "Success message is displayed: 'Registration successful. Please check your email to verify your account.'",
+      "Verification email is sent to the provided email address",
+      "User is redirected to a confirmation page or login page"
+    ],
+    "test_data": {
+      "email": "testuser@example.com",
+      "password": "SecurePass123!",
+      "expected_status": "success"
+    },
+    "tags": ["authentication", "registration", "positive", "smoke"]
+  },
+  {
+    "id": "TC-AUTH-001-NEG-001",
+    "requirement_id": "REQ-AUTH-001",
+    "title": "Registration Fails with Invalid Email Format",
+    "description": "Verify that the system rejects registration attempts with invalid email formats",
+    "type": "manual",
+    "scenario_type": "negative",
+    "priority": "high",
+    "preconditions": [
+      "User is on the registration page"
+    ],
+    "test_steps": [
+      {
+        "step_number": 1,
+        "action": "Enter an invalid email address (e.g., 'invalid-email') in the email field",
+        "expected_result": "Email field accepts the input"
+      },
+      {
+        "step_number": 2,
+        "action": "Enter a valid password (e.g., 'SecurePass123!') in the password field",
+        "expected_result": "Password field accepts the input"
+      },
+      {
+        "step_number": 3,
+        "action": "Enter the same password in the 'Confirm Password' field",
+        "expected_result": "Confirm password field accepts the input"
+      },
+      {
+        "step_number": 4,
+        "action": "Click the 'Register' button",
+        "expected_result": "Form validation is triggered"
+      }
+    ],
+    "expected_results": [
+      "Registration is not processed",
+      "Error message is displayed: 'Please enter a valid email address'",
+      "Email field is highlighted with an error indicator",
+      "User remains on the registration page"
+    ],
+    "test_data": {
+      "email": "invalid-email",
+      "password": "SecurePass123!",
+      "expected_status": "validation_error"
+    },
+    "tags": ["authentication", "registration", "negative", "validation"]
+  },
+  {
+    "id": "TC-AUTH-001-NEG-002",
+    "requirement_id": "REQ-AUTH-001",
+    "title": "Registration Fails with Weak Password",
+    "description": "Verify that the system rejects passwords that do not meet complexity requirements",
+    "type": "manual",
+    "scenario_type": "negative",
+    "priority": "high",
+    "preconditions": [
+      "User is on the registration page"
+    ],
+    "test_steps": [
+      {
+        "step_number": 1,
+        "action": "Enter a valid email address (e.g., 'testuser@example.com') in the email field",
+        "expected_result": "Email field accepts the input"
+      },
+      {
+        "step_number": 2,
+        "action": "Enter a weak password (e.g., 'password') that does not meet requirements",
+        "expected_result": "Password field accepts the input but password strength indicator shows 'Weak'"
+      },
+      {
+        "step_number": 3,
+        "action": "Enter the same password in the 'Confirm Password' field",
+        "expected_result": "Confirm password field accepts the input"
+      },
+      {
+        "step_number": 4,
+        "action": "Click the 'Register' button",
+        "expected_result": "Form validation is triggered"
+      }
+    ],
+    "expected_results": [
+      "Registration is not processed",
+      "Error message is displayed: 'Password must contain at least 8 characters, including uppercase, lowercase, number, and special character'",
+      "Password field is highlighted with an error indicator",
+      "User remains on the registration page"
+    ],
+    "test_data": {
+      "email": "testuser@example.com",
+      "password": "password",
+      "expected_status": "validation_error"
+    },
+    "tags": ["authentication", "registration", "negative", "validation", "security"]
+  },
+  {
+    "id": "TC-AUTH-001-EDGE-001",
+    "requirement_id": "REQ-AUTH-001",
+    "title": "Registration with Minimum Valid Password Length",
+    "description": "Verify that the system accepts a password with exactly 8 characters meeting all complexity requirements",
+    "type": "manual",
+    "scenario_type": "edge_case",
+    "priority": "medium",
+    "preconditions": [
+      "User is on the registration page"
+    ],
+    "test_steps": [
+      {
+        "step_number": 1,
+        "action": "Enter a valid email address (e.g., 'testuser@example.com') in the email field",
+        "expected_result": "Email field accepts the input"
+      },
+      {
+        "step_number": 2,
+        "action": "Enter a password with exactly 8 characters meeting all requirements (e.g., 'Pass123!') in the password field",
+        "expected_result": "Password field accepts the input"
+      },
+      {
+        "step_number": 3,
+        "action": "Enter the same password in the 'Confirm Password' field",
+        "expected_result": "Confirm password field accepts the input"
+      },
+      {
+        "step_number": 4,
+        "action": "Click the 'Register' button",
+        "expected_result": "Registration form is submitted"
+      }
+    ],
+    "expected_results": [
+      "User account is created successfully",
+      "Success message is displayed",
+      "Verification email is sent",
+      "System accepts the minimum valid password length"
+    ],
+    "test_data": {
+      "email": "testuser@example.com",
+      "password": "Pass123!",
+      "expected_status": "success"
+    },
+    "tags": ["authentication", "registration", "edge_case", "boundary"]
+  },
+  {
+    "id": "TC-AUTH-002-POS-001",
+    "requirement_id": "REQ-AUTH-002",
+    "title": "Successful Login with Valid Credentials",
+    "description": "Verify that a registered user can successfully log in with correct email and password",
+    "type": "manual",
+    "scenario_type": "positive",
+    "priority": "critical",
+    "preconditions": [
+      "User has a registered account with email 'testuser@example.com' and password 'SecurePass123!'",
+      "User is on the login page",
+      "User is not currently logged in"
+    ],
+    "test_steps": [
+      {
+        "step_number": 1,
+        "action": "Enter the registered email address 'testuser@example.com' in the email field",
+        "expected_result": "Email field accepts the input"
+      },
+      {
+        "step_number": 2,
+        "action": "Enter the correct password 'SecurePass123!' in the password field",
+        "expected_result": "Password field accepts the input (displayed as masked characters)"
+      },
+      {
+        "step_number": 3,
+        "action": "Click the 'Login' button",
+        "expected_result": "Login form is submitted"
+      }
+    ],
+    "expected_results": [
+      "User is authenticated successfully",
+      "Session token is created",
+      "User is redirected to the dashboard",
+      "User's name or email is displayed in the navigation bar",
+      "Login timestamp is recorded in the system"
+    ],
+    "test_data": {
+      "email": "testuser@example.com",
+      "password": "SecurePass123!",
+      "expected_status": "success"
+    },
+    "tags": ["authentication", "login", "positive", "smoke", "critical"]
+  },
+  {
+    "id": "TC-AUTH-002-NEG-001",
+    "requirement_id": "REQ-AUTH-002",
+    "title": "Login Fails with Invalid Password",
+    "description": "Verify that the system rejects login attempts with incorrect password",
+    "type": "manual",
+    "scenario_type": "negative",
+    "priority": "critical",
+    "preconditions": [
+      "User has a registered account with email 'testuser@example.com'",
+      "User is on the login page"
+    ],
+    "test_steps": [
+      {
+        "step_number": 1,
+        "action": "Enter the registered email address 'testuser@example.com' in the email field",
+        "expected_result": "Email field accepts the input"
+      },
+      {
+        "step_number": 2,
+        "action": "Enter an incorrect password (e.g., 'WrongPassword123!') in the password field",
+        "expected_result": "Password field accepts the input"
+      },
+      {
+        "step_number": 3,
+        "action": "Click the 'Login' button",
+        "expected_result": "Login form is submitted"
+      }
+    ],
+    "expected_results": [
+      "Authentication fails",
+      "Error message is displayed: 'Invalid email or password'",
+      "User remains on the login page",
+      "Failed login attempt is logged",
+      "Failed login counter is incremented for the account"
+    ],
+    "test_data": {
+      "email": "testuser@example.com",
+      "password": "WrongPassword123!",
+      "expected_status": "authentication_failed"
+    },
+    "tags": ["authentication", "login", "negative", "security", "critical"]
+  },
+  {
+    "id": "TC-AUTH-002-EDGE-001",
+    "requirement_id": "REQ-AUTH-002",
+    "title": "Account Lockout After Maximum Failed Login Attempts",
+    "description": "Verify that the system locks an account after 10 consecutive failed login attempts",
+    "type": "manual",
+    "scenario_type": "edge_case",
+    "priority": "high",
+    "preconditions": [
+      "User has a registered account with email 'testuser@example.com'",
+      "Account has 9 failed login attempts already recorded",
+      "User is on the login page"
+    ],
+    "test_steps": [
+      {
+        "step_number": 1,
+        "action": "Enter the registered email address 'testuser@example.com' in the email field",
+        "expected_result": "Email field accepts the input"
+      },
+      {
+        "step_number": 2,
+        "action": "Enter an incorrect password in the password field",
+        "expected_result": "Password field accepts the input"
+      },
+      {
+        "step_number": 3,
+        "action": "Click the 'Login' button",
+        "expected_result": "Login form is submitted"
+      }
+    ],
+    "expected_results": [
+      "Authentication fails",
+      "Account is locked",
+      "Error message is displayed: 'Your account has been locked due to too many failed login attempts. Please contact support or reset your password.'",
+      "Account locked flag is set to true in the database",
+      "Account lockout event is logged",
+      "Subsequent login attempts with correct password are also rejected until account is unlocked"
+    ],
+    "test_data": {
+      "email": "testuser@example.com",
+      "password": "WrongPassword123!",
+      "failed_attempts_before": 9,
+      "expected_status": "account_locked"
+    },
+    "tags": ["authentication", "login", "edge_case", "security", "rate_limiting"]
+  }
+]

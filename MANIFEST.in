@@ -1,0 +1,33 @@
+# Include documentation and configuration files
+include README.md
+include LICENSE
+include CHANGELOG.md
+include requirements.txt
+include .env.example
+
+# Include configuration examples
+include config.example.yaml
+include config.kiro.yaml
+
+# Include all example files
+recursive-include examples *.md *.yaml *.json *.py
+
+# Include all documentation
+recursive-include docs *.md *.rst
+
+# Include package data
+recursive-include qa_agent *.py
+recursive-include qa_agent/templates *
+
+# Exclude development and build artifacts
+global-exclude __pycache__
+global-exclude *.py[co]
+global-exclude .DS_Store
+global-exclude *.so
+global-exclude .git*
+global-exclude .pytest_cache
+global-exclude .mypy_cache
+global-exclude .ruff_cache
+global-exclude htmlcov
+global-exclude .coverage
+global-exclude *.egg-info

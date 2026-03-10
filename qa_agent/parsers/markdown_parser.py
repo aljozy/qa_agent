@@ -4,8 +4,12 @@ import re
 from pathlib import Path
 from typing import List, Optional
 
+from qa_agent.core.exceptions import ParsingError, ValidationError
+from qa_agent.core.logging_config import get_logger, log_exception, log_operation_complete, log_operation_failed, log_operation_start
 from qa_agent.models.base import Requirement, RequirementType, ValidationResult
 from qa_agent.parsers.base import RequirementParser
+
+logger = get_logger(__name__)
 
 
 class MarkdownParser(RequirementParser):
@@ -60,64 +64,96 @@ class MarkdownParser(RequirementParser):
             List of parsed requirements
 
         Raises:
-            ValueError: If content is empty or invalid
+            ParsingError: If content is empty, invalid, or parsing fails
             FileNotFoundError: If input_data is a Path that doesn't exist
         """
-        # Handle Path input
-        if isinstance(input_data, Path):
-            return self.parse_file(input_data)
+        log_operation_start(logger, "parse_markdown", source=source)
         
-        # Handle string input
-        content = input_data
-        if not content or not content.strip():
-            raise ValueError("Markdown content cannot be empty")
+        try:
+            # Handle Path input
+            if isinstance(input_data, Path):
+                return self.parse_file(input_data)
+            
+            # Handle string input
+            content = input_data
+            if not content or not content.strip():
+                raise ParsingError(
+                    "Markdown content cannot be empty",
+                    source=source,
+                    details={"content_length": len(content) if content else 0}
+                )
 
-        requirements: List[Requirement] = []
-        lines = content.split("\n")
+            requirements: List[Requirement] = []
+            lines = content.split("\n")
 
-        # Filter out code blocks first
-        filtered_lines = []
-        in_code_block = False
-        for line in lines:
-            if line.strip().startswith("```"):
-                in_code_block = not in_code_block
-                continue
-            if not in_code_block:
-                filtered_lines.append(line)
+            # Filter out code blocks first
+            filtered_lines = []
+            in_code_block = False
+            for line in lines:
+                if line.strip().startswith("```"):
+                    in_code_block = not in_code_block
+                    continue
+                if not in_code_block:
+                    filtered_lines.append(line)
 
-        current_section: List[str] = []
-        current_heading = ""
-        heading_level = 0
+            current_section: List[str] = []
+            current_heading = ""
+            heading_level = 0
 
-        for line in filtered_lines:
-            # Check if line is a heading
-            heading_match = re.match(r"^(#{1,6})\s+(.+)$", line)
+            for line in filtered_lines:
+                # Check if line is a heading
+                heading_match = re.match(r"^(#{1,6})\s+(.+)$", line)
 
-            if heading_match:
-                # Process previous section before starting new one
-                if current_section:
-                    reqs = self._extract_requirements_from_section(
-                        current_section, current_heading, heading_level, source
-                    )
-                    requirements.extend(reqs)
+                if heading_match:
+                    # Process previous section before starting new one
+                    if current_section:
+                        reqs = self._extract_requirements_from_section(
+                            current_section, current_heading, heading_level, source
+                        )
+                        requirements.extend(reqs)
 
-                # Start new section
-                heading_level = len(heading_match.group(1))
-                current_heading = heading_match.group(2).strip()
-                current_section = []
-            else:
-                # Add line to current section
-                if line.strip():
-                    current_section.append(line)
+                    # Start new section
+                    heading_level = len(heading_match.group(1))
+                    current_heading = heading_match.group(2).strip()
+                    current_section = []
+                else:
+                    # Add line to current section
+                    if line.strip():
+                        current_section.append(line)
 
-        # Process final section
-        if current_section:
-            reqs = self._extract_requirements_from_section(
-                current_section, current_heading, heading_level, source
+            # Process final section
+            if current_section:
+                reqs = self._extract_requirements_from_section(
+                    current_section, current_heading, heading_level, source
+                )
+                requirements.extend(reqs)
+
+            log_operation_complete(
+                logger,
+                "parse_markdown",
+                source=source,
+                requirements_count=len(requirements)
             )
-            requirements.extend(reqs)
-
-        return requirements
+            
+            logger.info(
+                f"Successfully parsed {len(requirements)} requirements from markdown",
+                extra={"extra_fields": {"source": source, "requirements_count": len(requirements)}}
+            )
+            
+            return requirements
+            
+        except ParsingError:
+            # Re-raise parsing errors
+            raise
+        except Exception as e:
+            # Wrap unexpected errors in ParsingError
+            error = ParsingError(
+                f"Failed to parse markdown document: {str(e)}",
+                source=source,
+                details={"original_error": str(e)}
+            )
+            log_exception(logger, error, "Markdown parsing failed", source=source)
+            raise error from e
 
     def _extract_requirements_from_section(
         self, lines: List[str], heading: str, level: int, source: str
@@ -376,30 +412,80 @@ class MarkdownParser(RequirementParser):
 
         Raises:
             FileNotFoundError: If file doesn't exist
-            ValueError: If file is not a valid Markdown file
+            ParsingError: If file is not valid or parsing fails
         """
         file_path = Path(file_path)
+        
+        log_operation_start(logger, "parse_markdown_file", file_path=str(file_path))
 
-        if not file_path.exists():
-            raise FileNotFoundError(f"File not found: {file_path}")
-
-        if not file_path.is_file():
-            raise ValueError(f"Path is not a file: {file_path}")
-
-        # Read file content
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                content = f.read()
-        except Exception as e:
-            raise ValueError(f"Failed to read file: {file_path}\nError: {str(e)}") from e
+            if not file_path.exists():
+                raise FileNotFoundError(
+                    f"Markdown file not found: {file_path}\n"
+                    f"Please ensure the file exists at the specified location."
+                )
 
-        # Validate content
-        validation = self.validate(content)
-        if not validation.is_valid:
-            raise ValueError(
-                f"Invalid Markdown file: {file_path}\n"
-                f"Errors: {', '.join(validation.errors)}"
+            if not file_path.is_file():
+                raise ParsingError(
+                    f"Path is not a file: {file_path}",
+                    source=str(file_path),
+                    details={"path_type": "directory" if file_path.is_dir() else "unknown"}
+                )
+
+            # Read file content
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+            except UnicodeDecodeError as e:
+                raise ParsingError(
+                    f"Failed to read file (encoding error): {file_path}",
+                    source=str(file_path),
+                    details={"error": "File is not valid UTF-8 encoded text"}
+                ) from e
+            except PermissionError as e:
+                raise ParsingError(
+                    f"Permission denied reading file: {file_path}",
+                    source=str(file_path),
+                    details={"error": "Insufficient permissions to read file"}
+                ) from e
+            except Exception as e:
+                raise ParsingError(
+                    f"Failed to read file: {file_path}",
+                    source=str(file_path),
+                    details={"error": str(e)}
+                ) from e
+
+            # Validate content
+            validation = self.validate(content)
+            if not validation.is_valid:
+                error_msg = f"Invalid Markdown file: {file_path}\nErrors: {', '.join(validation.errors)}"
+                raise ParsingError(
+                    error_msg,
+                    source=str(file_path),
+                    details={"validation_errors": validation.errors, "warnings": validation.warnings}
+                )
+
+            # Parse content
+            requirements = self.parse(content, source=str(file_path))
+            
+            log_operation_complete(
+                logger,
+                "parse_markdown_file",
+                file_path=str(file_path),
+                requirements_count=len(requirements)
             )
-
-        # Parse content
-        return self.parse(content, source=str(file_path))
+            
+            return requirements
+            
+        except (FileNotFoundError, ParsingError):
+            # Re-raise known errors
+            raise
+        except Exception as e:
+            # Wrap unexpected errors
+            error = ParsingError(
+                f"Unexpected error parsing file: {file_path}",
+                source=str(file_path),
+                details={"original_error": str(e)}
+            )
+            log_exception(logger, error, "File parsing failed", file_path=str(file_path))
+            raise error from e

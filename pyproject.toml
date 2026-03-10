@@ -10,18 +10,33 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
-    {name = "QA Agent Team"}
+    {name = "QA Agent Team", email = "qa-agent@example.com"}
 ]
-keywords = ["qa", "testing", "ai", "automation", "rag", "mcp"]
+maintainers = [
+    {name = "QA Agent Team", email = "qa-agent@example.com"}
+]
+keywords = ["qa", "testing", "ai", "automation", "rag", "mcp", "test-generation", "requirements", "traceability"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
     "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Quality Assurance",
+    "Typing :: Typed",
 ]
+
+[project.urls]
+Homepage = "https://github.com/qa-agent/qa-agent"
+Documentation = "https://github.com/qa-agent/qa-agent/blob/main/README.md"
+Repository = "https://github.com/qa-agent/qa-agent"
+Issues = "https://github.com/qa-agent/qa-agent/issues"
+Changelog = "https://github.com/qa-agent/qa-agent/blob/main/CHANGELOG.md"
 
 dependencies = [
     "pydantic>=2.5.0",

@@ -1,0 +1,140 @@
+[
+  {
+    "id": "REQ-AUTH-001",
+    "title": "User Registration",
+    "description": "Users must be able to create a new account with email and password.",
+    "type": "functional",
+    "priority": "high",
+    "source": "example_prd.md",
+    "acceptance_criteria": [
+      "System SHALL accept valid email addresses (RFC 5322 compliant)",
+      "System SHALL require passwords with minimum 8 characters",
+      "System SHALL require at least one uppercase letter, one lowercase letter, one number, and one special character",
+      "System SHALL send a verification email upon successful registration",
+      "System SHALL prevent duplicate email registrations",
+      "System SHALL display appropriate error messages for invalid inputs"
+    ],
+    "metadata": {
+      "section": "2.1 User Registration",
+      "line_number": 10
+    }
+  },
+  {
+    "id": "REQ-AUTH-002",
+    "title": "User Login",
+    "description": "Registered users must be able to log in using their credentials.",
+    "type": "functional",
+    "priority": "high",
+    "source": "example_prd.md",
+    "acceptance_criteria": [
+      "System SHALL authenticate users with valid email and password combinations",
+      "System SHALL reject login attempts with invalid credentials",
+      "System SHALL implement rate limiting (max 5 failed attempts per 15 minutes)",
+      "System SHALL lock accounts after 10 consecutive failed login attempts",
+      "System SHALL create a session token upon successful authentication",
+      "System SHALL redirect authenticated users to the dashboard"
+    ],
+    "metadata": {
+      "section": "2.2 User Login",
+      "line_number": 24
+    }
+  },
+  {
+    "id": "REQ-AUTH-003",
+    "title": "Password Reset",
+    "description": "Users must be able to reset their password if forgotten.",
+    "type": "functional",
+    "priority": "high",
+    "source": "example_prd.md",
+    "acceptance_criteria": [
+      "System SHALL provide a \"Forgot Password\" link on the login page",
+      "System SHALL send a password reset email with a secure token",
+      "System SHALL expire reset tokens after 1 hour",
+      "System SHALL allow users to set a new password using a valid reset token",
+      "System SHALL invalidate all existing sessions after password reset",
+      "System SHALL prevent reuse of the last 5 passwords"
+    ],
+    "metadata": {
+      "section": "2.3 Password Reset",
+      "line_number": 38
+    }
+  },
+  {
+    "id": "REQ-AUTH-004",
+    "title": "Session Management",
+    "description": "The system must manage user sessions securely.",
+    "type": "functional",
+    "priority": "high",
+    "source": "example_prd.md",
+    "acceptance_criteria": [
+      "System SHALL create secure session tokens using cryptographically secure random generation",
+      "System SHALL set session timeout to 30 minutes of inactivity",
+      "System SHALL allow users to manually log out",
+      "System SHALL invalidate session tokens upon logout",
+      "System SHALL support \"Remember Me\" functionality with extended session (30 days)",
+      "System SHALL store session data securely (encrypted at rest)"
+    ],
+    "metadata": {
+      "section": "2.4 Session Management",
+      "line_number": 52
+    }
+  },
+  {
+    "id": "REQ-AUTH-005",
+    "title": "Security",
+    "description": "The authentication system must implement industry-standard security practices.",
+    "type": "non-functional",
+    "priority": "critical",
+    "source": "example_prd.md",
+    "acceptance_criteria": [
+      "System SHALL hash passwords using bcrypt with a cost factor of 12",
+      "System SHALL use HTTPS for all authentication endpoints",
+      "System SHALL implement CSRF protection for all state-changing operations",
+      "System SHALL sanitize all user inputs to prevent SQL injection",
+      "System SHALL implement secure HTTP headers (HSTS, CSP, X-Frame-Options)",
+      "System SHALL log all authentication events for audit purposes"
+    ],
+    "metadata": {
+      "section": "3.1 Security",
+      "line_number": 68
+    }
+  },
+  {
+    "id": "REQ-AUTH-006",
+    "title": "Performance",
+    "description": "The authentication system must meet performance requirements.",
+    "type": "non-functional",
+    "priority": "medium",
+    "source": "example_prd.md",
+    "acceptance_criteria": [
+      "System SHALL respond to login requests within 500ms (95th percentile)",
+      "System SHALL respond to registration requests within 1 second (95th percentile)",
+      "System SHALL support at least 100 concurrent authentication requests",
+      "System SHALL maintain 99.9% uptime during business hours"
+    ],
+    "metadata": {
+      "section": "3.2 Performance",
+      "line_number": 82
+    }
+  },
+  {
+    "id": "REQ-AUTH-007",
+    "title": "Usability",
+    "description": "The authentication interface must be user-friendly.",
+    "type": "non-functional",
+    "priority": "medium",
+    "source": "example_prd.md",
+    "acceptance_criteria": [
+      "System SHALL display clear error messages for validation failures",
+      "System SHALL show password strength indicator during registration",
+      "System SHALL provide visual feedback for form submission (loading states)",
+      "System SHALL be accessible (WCAG 2.1 Level AA compliant)",
+      "System SHALL support keyboard navigation",
+      "System SHALL work on mobile devices (responsive design)"
+    ],
+    "metadata": {
+      "section": "3.3 Usability",
+      "line_number": 94
+    }
+  }
+]

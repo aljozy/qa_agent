@@ -1,14 +1,33 @@
-# Core dependencies
-pydantic>=2.5.0
-pydantic-settings>=2.1.0
-chromadb>=0.4.22
-openai>=1.10.0
-typer>=0.9.0
-rich>=13.7.0
-pyyaml>=6.0.1
-python-dotenv>=1.0.0
-httpx>=0.26.0
-sentence-transformers>=2.3.0
-qdrant-client>=1.7.0
-prance>=23.6.21.0
-openapi-spec-validator>=0.8.0
+# AI-Powered QA Agent - Production Dependencies
+# Version: 0.1.0
+# Python: >=3.10
+
+# Core Framework
+pydantic>=2.5.0,<3.0.0
+pydantic-settings>=2.1.0,<3.0.0
+
+# Vector Store & Embeddings
+chromadb>=0.4.22,<0.5.0
+qdrant-client>=1.7.0,<2.0.0
+sentence-transformers>=2.3.0,<3.0.0
+
+# AI/LLM Integration
+openai>=1.10.0,<2.0.0
+
+# CLI & User Interface
+typer>=0.9.0,<1.0.0
+rich>=13.7.0,<14.0.0
+
+# Configuration & Environment
+pyyaml>=6.0.1,<7.0.0
+python-dotenv>=1.0.0,<2.0.0
+
+# HTTP Client
+httpx>=0.26.0,<1.0.0
+
+# API Specification Parsing
+prance>=23.6.21.0,<24.0.0
+openapi-spec-validator>=0.8.0,<1.0.0
+
+# Logging
+python-json-logger>=2.0.7,<3.0.0

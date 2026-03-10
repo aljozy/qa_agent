@@ -1,0 +1,8 @@
+Requirement ID,Requirement Title,Requirement Type,Priority,Test Case IDs,Test Count,Coverage Status,Coverage Percentage
+REQ-AUTH-001,User Registration,functional,high,"TC-AUTH-001-POS-001, TC-AUTH-001-NEG-001, TC-AUTH-001-NEG-002, TC-AUTH-001-EDGE-001",4,Covered,100%
+REQ-AUTH-002,User Login,functional,high,"TC-AUTH-002-POS-001, TC-AUTH-002-NEG-001, TC-AUTH-002-EDGE-001",3,Covered,100%
+REQ-AUTH-003,Password Reset,functional,high,"",0,Not Covered,0%
+REQ-AUTH-004,Session Management,functional,high,"",0,Not Covered,0%
+REQ-AUTH-005,Security,non-functional,critical,"",0,Not Covered,0%
+REQ-AUTH-006,Performance,non-functional,medium,"",0,Not Covered,0%
+REQ-AUTH-007,Usability,non-functional,medium,"",0,Not Covered,0%

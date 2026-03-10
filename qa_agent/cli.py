@@ -13,8 +13,10 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 from qa_agent import __version__
 from qa_agent.analysis.rtm_generator import RTMGenerator
 from qa_agent.config import Config
+from qa_agent.core.exceptions import ConfigurationError, LLMError, ParsingError, StorageError
+from qa_agent.core.logging_config import setup_logging
 from qa_agent.generators.manual_test_generator import ManualTestGenerator
-from qa_agent.llm.client import LLMClient, LLMError
+from qa_agent.llm.client import LLMClient
 from qa_agent.parsers.markdown_parser import MarkdownParser
 from qa_agent.storage.file_storage import FileStorage
 
@@ -66,6 +68,17 @@ def parse(
         file_okay=True,
         dir_okay=False,
     ),
+    log_level: str = typer.Option(
+        "INFO",
+        "--log-level",
+        "-l",
+        help="Logging level (DEBUG, INFO, WARNING, ERROR)",
+    ),
+    json_logs: bool = typer.Option(
+        False,
+        "--json-logs",
+        help="Output logs in JSON format for CI/CD",
+    ),
 ) -> None:
     """
     Parse markdown requirements and save to JSON.
@@ -73,6 +86,14 @@ def parse(
     This command parses a markdown document containing requirements and saves
     the structured requirements to a JSON file for later use.
     """
+    # Initialize logging
+    setup_logging(
+        log_level=log_level,
+        log_to_file=True,
+        log_to_console=True,
+        json_format=json_logs,
+    )
+    
     try:
         # Load configuration if provided
         if config_file:
@@ -108,6 +129,21 @@ def parse(
         console.print(f"[green]✓[/green] Saved requirements to: {output_path}")
         console.print(f"\n[bold green]Success![/bold green] Parsed {len(requirements)} requirements")
         
+    except ParsingError as e:
+        console.print(f"[bold red]Parsing Error:[/bold red] {e.message}", style="red")
+        if e.details:
+            console.print(f"[dim]Details: {e.details}[/dim]")
+        raise typer.Exit(1)
+    except StorageError as e:
+        console.print(f"[bold red]Storage Error:[/bold red] {e.message}", style="red")
+        if e.details:
+            console.print(f"[dim]Details: {e.details}[/dim]")
+        raise typer.Exit(1)
+    except ConfigurationError as e:
+        console.print(f"[bold red]Configuration Error:[/bold red] {e.message}", style="red")
+        if e.details:
+            console.print(f"[dim]Details: {e.details}[/dim]")
+        raise typer.Exit(1)
     except Exception as e:
         console.print(f"[bold red]Error:[/bold red] {str(e)}", style="red")
         raise typer.Exit(1)

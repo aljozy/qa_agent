@@ -7,6 +7,11 @@ from typing import Any, Dict, Literal, Optional
 import yaml
 from pydantic import BaseModel, Field, field_validator
 
+from qa_agent.core.exceptions import ConfigurationError
+from qa_agent.core.logging_config import get_logger
+
+logger = get_logger(__name__)
+
 
 class AIConfig(BaseModel):
     """AI model configuration supporting both Kiro and OpenAI."""
@@ -41,9 +46,11 @@ class AIConfig(BaseModel):
     def model_post_init(self, __context: Any) -> None:
         """Validate configuration after initialization."""
         if self.provider == "openai" and not self.api_key:
-            raise ValueError(
+            raise ConfigurationError(
                 "OpenAI provider requires an API key. "
-                "Please provide 'api_key' in the configuration or set the OPENAI_API_KEY environment variable."
+                "Please provide 'api_key' in the configuration or set the OPENAI_API_KEY environment variable.",
+                field="api_key",
+                details={"provider": "openai"}
             )
 
 
@@ -86,9 +93,11 @@ class Config(BaseModel):
 
         Raises:
             FileNotFoundError: If the configuration file doesn't exist
-            ValueError: If the configuration file is invalid or malformed
+            ConfigurationError: If the configuration file is invalid or malformed
         """
         config_path = Path(config_path)
+        
+        logger.info(f"Loading configuration from: {config_path}")
 
         if not config_path.exists():
             raise FileNotFoundError(
@@ -97,36 +106,40 @@ class Config(BaseModel):
             )
 
         if not config_path.is_file():
-            raise ValueError(
-                f"Configuration path is not a file: {config_path}\n"
-                f"Please provide a valid YAML configuration file."
+            raise ConfigurationError(
+                f"Configuration path is not a file: {config_path}",
+                config_file=str(config_path),
+                details={"path_type": "directory" if config_path.is_dir() else "unknown"}
             )
 
         try:
             with open(config_path, "r", encoding="utf-8") as f:
                 config_data = yaml.safe_load(f)
         except yaml.YAMLError as e:
-            raise ValueError(
-                f"Failed to parse YAML configuration file: {config_path}\n"
-                f"Error: {str(e)}\n"
-                f"Please ensure the file contains valid YAML syntax."
+            raise ConfigurationError(
+                f"Failed to parse YAML configuration file: {config_path}",
+                config_file=str(config_path),
+                details={"error": str(e), "error_type": "yaml_parse_error"}
             ) from e
         except Exception as e:
-            raise ValueError(
-                f"Failed to read configuration file: {config_path}\n"
-                f"Error: {str(e)}"
+            raise ConfigurationError(
+                f"Failed to read configuration file: {config_path}",
+                config_file=str(config_path),
+                details={"error": str(e)}
             ) from e
 
         if config_data is None:
-            raise ValueError(
-                f"Configuration file is empty: {config_path}\n"
-                f"Please provide a valid configuration."
+            raise ConfigurationError(
+                f"Configuration file is empty: {config_path}",
+                config_file=str(config_path),
+                details={"error": "empty_file"}
             )
 
         if not isinstance(config_data, dict):
-            raise ValueError(
-                f"Configuration file must contain a YAML dictionary, got {type(config_data)}\n"
-                f"Please ensure the file contains valid configuration structure."
+            raise ConfigurationError(
+                f"Configuration file must contain a YAML dictionary",
+                config_file=str(config_path),
+                details={"actual_type": type(config_data).__name__}
             )
 
         # Support environment variable substitution for API key
@@ -137,10 +150,13 @@ class Config(BaseModel):
                 env_value = os.getenv(env_var)
                 if env_value:
                     config_data["ai"]["api_key"] = env_value
+                    logger.debug(f"Loaded API key from environment variable: {env_var}")
                 else:
-                    raise ValueError(
-                        f"Environment variable '{env_var}' not found\n"
-                        f"Please set the environment variable or provide the API key directly."
+                    raise ConfigurationError(
+                        f"Environment variable '{env_var}' not found",
+                        config_file=str(config_path),
+                        field="ai.api_key",
+                        details={"env_var": env_var}
                     )
         
         # Support legacy 'openai' key for backward compatibility
@@ -148,14 +164,20 @@ class Config(BaseModel):
             config_data["ai"] = config_data.pop("openai")
             if "ai" in config_data and isinstance(config_data["ai"], dict):
                 config_data["ai"]["provider"] = "openai"
+            logger.warning("Using legacy 'openai' configuration key. Please update to 'ai' key.")
 
         try:
-            return cls(**config_data)
+            config = cls(**config_data)
+            logger.info(
+                "Configuration loaded successfully",
+                extra={"extra_fields": {"config_file": str(config_path), "provider": config.ai.provider}}
+            )
+            return config
         except Exception as e:
-            raise ValueError(
-                f"Invalid configuration in file: {config_path}\n"
-                f"Error: {str(e)}\n"
-                f"Please check the configuration structure and values."
+            raise ConfigurationError(
+                f"Invalid configuration in file: {config_path}",
+                config_file=str(config_path),
+                details={"error": str(e)}
             ) from e
 
     @classmethod

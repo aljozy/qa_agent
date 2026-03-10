@@ -1,0 +1,113 @@
+# Example Configuration File for QA Agent
+# This file demonstrates all available configuration options
+
+# ============================================================================
+# AI Model Configuration
+# ============================================================================
+ai:
+  # Provider Selection
+  # Options: "kiro" (default, no API key needed) or "openai"
+  provider: "kiro"
+  
+  # Model Selection
+  # For Kiro provider:
+  #   - "auto": Automatically select the best model for each task (recommended)
+  #   - "fast": Faster responses, suitable for simple requirements
+  #   - "balanced": Balance between speed and quality
+  #   - "quality": Best quality output, slower responses
+  # For OpenAI provider:
+  #   - "gpt-4": Most capable model, best for complex requirements
+  #   - "gpt-4-turbo": Faster GPT-4 variant
+  #   - "gpt-3.5-turbo": Faster and cheaper, good for simple requirements
+  model: "auto"
+  
+  # Temperature (0.0 - 2.0)
+  # Controls randomness in generation:
+  #   - 0.0: Deterministic, consistent outputs
+  #   - 0.7: Balanced (recommended for test generation)
+  #   - 1.0: More creative
+  #   - 2.0: Very creative, less consistent
+  temperature: 0.7
+  
+  # Maximum Tokens
+  # Maximum number of tokens to generate per request
+  # Typical values:
+  #   - 1000: Short test cases
+  #   - 2000: Standard test cases (recommended)
+  #   - 4000: Detailed test cases with extensive steps
+  max_tokens: 2000
+  
+  # API Key (only required for OpenAI provider)
+  # Options:
+  #   1. Use environment variable (recommended): api_key: "${OPENAI_API_KEY}"
+  #   2. Provide directly (not recommended for production): api_key: "sk-..."
+  #   3. Omit for Kiro provider (no API key needed)
+  # api_key: "${OPENAI_API_KEY}"
+
+# ============================================================================
+# Output Configuration
+# ============================================================================
+output:
+  # Base Directory
+  # All generated artifacts will be saved under this directory
+  # The CLI will create subdirectories for different artifact types:
+  #   - {directory}/requirements/ - Parsed requirements
+  #   - {directory}/tests/ - Generated test cases
+  #   - {directory}/rtm/ - Requirement traceability matrices
+  directory: "output"
+
+# ============================================================================
+# Example Configurations for Different Use Cases
+# ============================================================================
+
+# Example 1: Development/Testing (Fast, Kiro)
+# ai:
+#   provider: "kiro"
+#   model: "fast"
+#   temperature: 0.5
+#   max_tokens: 1000
+
+# Example 2: Production (High Quality, Kiro)
+# ai:
+#   provider: "kiro"
+#   model: "quality"
+#   temperature: 0.7
+#   max_tokens: 2000
+
+# Example 3: OpenAI GPT-4 (Best Quality)
+# ai:
+#   provider: "openai"
+#   api_key: "${OPENAI_API_KEY}"
+#   model: "gpt-4"
+#   temperature: 0.7
+#   max_tokens: 2000
+
+# Example 4: OpenAI GPT-3.5 (Cost-Effective)
+# ai:
+#   provider: "openai"
+#   api_key: "${OPENAI_API_KEY}"
+#   model: "gpt-3.5-turbo"
+#   temperature: 0.7
+#   max_tokens: 2000
+
+# Example 5: Deterministic Output (for testing)
+# ai:
+#   provider: "kiro"
+#   model: "balanced"
+#   temperature: 0.0  # Completely deterministic
+#   max_tokens: 2000
+
+# ============================================================================
+# Environment Variables
+# ============================================================================
+# You can use environment variables in this config file using the syntax:
+# ${VARIABLE_NAME}
+#
+# Common environment variables:
+#   - OPENAI_API_KEY: Your OpenAI API key
+#   - QA_AGENT_OUTPUT_DIR: Override output directory
+#   - QA_AGENT_LOG_LEVEL: Set logging level (DEBUG, INFO, WARNING, ERROR)
+#
+# Set environment variables in a .env file or export them:
+#   export OPENAI_API_KEY="sk-..."
+#   export QA_AGENT_OUTPUT_DIR="custom_output"

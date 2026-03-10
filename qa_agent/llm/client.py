@@ -6,6 +6,8 @@ import time
 from typing import Any, Dict, List, Optional
 
 from qa_agent.config.loader import AIConfig
+from qa_agent.core.exceptions import APIError, LLMError, RateLimitError
+from qa_agent.core.logging_config import get_logger, log_exception, log_operation_complete, log_operation_failed, log_operation_start
 
 # Import OpenAI at module level for proper mocking in tests
 try:
@@ -13,25 +15,7 @@ try:
 except ImportError:
     AsyncOpenAI = None
 
-logger = logging.getLogger(__name__)
-
-
-class LLMError(Exception):
-    """Base exception for LLM client errors."""
-
-    pass
-
-
-class RateLimitError(LLMError):
-    """Exception raised when rate limit is exceeded."""
-
-    pass
-
-
-class APIError(LLMError):
-    """Exception raised for API-related errors."""
-
-    pass
+logger = get_logger(__name__)
 
 
 class LLMClient:
@@ -50,7 +34,7 @@ class LLMClient:
             config: AI configuration containing provider, model, and parameters
 
         Raises:
-            ValueError: If the provider is not supported
+            LLMError: If the provider is not supported or initialization fails
         """
         self.config = config
         self.provider = config.provider
@@ -58,35 +42,48 @@ class LLMClient:
         self.temperature = config.temperature
         self.max_tokens = config.max_tokens
 
+        logger.info(
+            f"Initializing LLM client",
+            extra={"extra_fields": {"provider": self.provider, "model": self.model}}
+        )
+
         # Initialize provider-specific client
         if self.provider == "kiro":
             self._client = None  # Kiro uses built-in models, no external client needed
             logger.info(f"Initialized Kiro LLM client with model: {self.model}")
         elif self.provider == "openai":
             if AsyncOpenAI is None:
-                raise ImportError(
+                raise LLMError(
                     "OpenAI provider requires the 'openai' package. "
-                    "Install it with: pip install openai"
+                    "Install it with: pip install openai",
+                    provider="openai",
+                    details={"missing_package": "openai"}
                 )
             
             if not config.api_key:
-                raise ValueError(
+                raise LLMError(
                     "OpenAI provider requires an API key. "
-                    "Please provide 'api_key' in the configuration."
+                    "Please provide 'api_key' in the configuration.",
+                    provider="openai",
+                    details={"missing_field": "api_key"}
                 )
             
             try:
                 self._client = AsyncOpenAI(api_key=config.api_key)
+                logger.info(f"Initialized OpenAI LLM client with model: {self.model}")
             except ImportError as e:
-                raise ImportError(
+                raise LLMError(
                     "OpenAI provider requires the 'openai' package. "
-                    "Install it with: pip install openai"
+                    "Install it with: pip install openai",
+                    provider="openai",
+                    details={"error": str(e)}
                 ) from e
-            logger.info(f"Initialized OpenAI LLM client with model: {self.model}")
         else:
-            raise ValueError(
+            raise LLMError(
                 f"Unsupported provider: {self.provider}. "
-                f"Supported providers are: 'kiro', 'openai'"
+                f"Supported providers are: 'kiro', 'openai'",
+                provider=self.provider,
+                details={"supported_providers": ["kiro", "openai"]}
             )
 
     async def generate(

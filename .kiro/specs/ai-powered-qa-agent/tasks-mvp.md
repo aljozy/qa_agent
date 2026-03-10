@@ -114,8 +114,8 @@ This MVP implementation plan focuses on delivering core value in 6-8 weeks inste
 
 ### Phase 6: RTM Generator (Week 5)
 
-- [ ] 8. Implement RTM generator
-  - [ ] 8.1 Create RTM generator implementation
+- [x] 8. Implement RTM generator
+  - [x] 8.1 Create RTM generator implementation
     - Implement `RTMGenerator` class
     - Create matrix mapping requirements to test cases
     - Identify requirements with no test cases
@@ -132,8 +132,8 @@ This MVP implementation plan focuses on delivering core value in 6-8 weeks inste
 
 ### Phase 7: CLI Interface (Week 6)
 
-- [ ] 9. Implement command-line interface
-  - [ ] 9.1 Create CLI with Typer
+- [x] 9. Implement command-line interface
+  - [x] 9.1 Create CLI with Typer
     - Implement main CLI entry point
     - Implement `parse` command to parse markdown and save requirements
     - Implement `generate` command to generate tests from requirements

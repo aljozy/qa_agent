@@ -71,7 +71,7 @@ This MVP implementation plan focuses on delivering core value in 6-8 weeks inste
 ### Phase 4: AI Client Integration (Week 3)
 
 - [-] 6. Implement AI client wrapper
-  - [ ] 6.1 Create AI client
+  - [x] 6.1 Create AI client
     - Implement `LLMClient` class supporting both Kiro and OpenAI providers
     - Implement `generate()` method for chat completions
     - Handle API errors and rate limiting
@@ -88,7 +88,7 @@ This MVP implementation plan focuses on delivering core value in 6-8 weeks inste
 ### Phase 5: Manual Test Generator (Weeks 4-5)
 
 - [ ] 7. Implement manual test case generator
-  - [ ] 7.1 Create test generator implementation
+  - [x] 7.1 Create test generator implementation
     - Implement `ManualTestGenerator` class
     - Implement prompt templates for test case generation
     - Generate test cases for positive scenarios
@@ -99,7 +99,7 @@ This MVP implementation plan focuses on delivering core value in 6-8 weeks inste
     - Parse LLM responses into structured TestArtifact objects
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6_
 
-  - [ ] 7.2 Implement batch generation
+  - [x] 7.2 Implement batch generation
     - Process multiple requirements in parallel
     - Implement progress tracking
     - Handle partial failures gracefully

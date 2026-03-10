@@ -3,9 +3,11 @@
 import asyncio
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
-from qa_agent.config.loader import AIConfig
+if TYPE_CHECKING:
+    from qa_agent.config.loader import AIConfig
+
 from qa_agent.core.exceptions import APIError, LLMError, RateLimitError
 from qa_agent.core.logging_config import get_logger, log_exception, log_operation_complete, log_operation_failed, log_operation_start
 
@@ -26,7 +28,7 @@ class LLMClient:
     AI providers with built-in retry logic, rate limiting handling, and error management.
     """
 
-    def __init__(self, config: AIConfig):
+    def __init__(self, config: "AIConfig"):
         """
         Initialize the LLM client.
 

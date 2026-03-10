@@ -2,15 +2,17 @@
 
 import logging
 from pathlib import Path
-from typing import Callable, List, Optional
+from typing import TYPE_CHECKING, Callable, List, Optional
 
 from qa_agent.analysis.rtm_generator import RTMEntry, RTMGenerator
-from qa_agent.config import Config
 from qa_agent.generators.manual_test_generator import ManualTestGenerator
 from qa_agent.llm.client import LLMClient, LLMError
 from qa_agent.models.base import Requirement, TestArtifact
-from qa_agent.parsers.markdown_parser import MarkdownParser
 from qa_agent.storage.file_storage import FileStorage
+
+if TYPE_CHECKING:
+    from qa_agent.config.loader import Config
+    from qa_agent.parsers.markdown_parser import MarkdownParser
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +36,7 @@ class WorkflowOrchestrator:
     Provides progress tracking, error handling, and graceful degradation.
     """
 
-    def __init__(self, config: Config):
+    def __init__(self, config: "Config"):
         """
         Initialize the workflow orchestrator.
         
@@ -43,8 +45,8 @@ class WorkflowOrchestrator:
         """
         self.config = config
         
-        # Initialize components
-        self.parser = MarkdownParser()
+        # Initialize components (lazy-load parser to avoid circular imports)
+        self._parser: Optional["MarkdownParser"] = None
         self.storage = FileStorage(config.output.directory / "requirements")
         self.rtm_generator = RTMGenerator()
         
@@ -53,6 +55,14 @@ class WorkflowOrchestrator:
         self._test_generator: Optional[ManualTestGenerator] = None
         
         logger.info("Initialized WorkflowOrchestrator")
+
+    @property
+    def parser(self) -> "MarkdownParser":
+        """Lazy initialization of markdown parser."""
+        if self._parser is None:
+            from qa_agent.parsers.markdown_parser import MarkdownParser
+            self._parser = MarkdownParser()
+        return self._parser
 
     @property
     def llm_client(self) -> LLMClient:
